@@ -48,7 +48,7 @@ if selection.selection.rows:
         else:
             st.warning("No audio link found for this record.")
 
-with col_right:
+with right_col:
         st.subheader("Transcription & Q&A")
         
         # 1. Show the main transcript excerpt
