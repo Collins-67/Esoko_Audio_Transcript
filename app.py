@@ -30,31 +30,102 @@ selection = st.dataframe(
 )
 
 # --- AUDIO PLAYER LOGIC ---
+# --- AUDIO & Q&A SECTION ---
 if selection.selection.rows:
-    selected_idx = selection.selection.rows[0]
-    row = df.iloc[selected_idx]
+    selected_index = selection.selection.rows[0]
+    row = df.iloc[selected_index]
     
     st.divider()
-    col_left, col_right = st.columns(2)
     
-    with col_left:
+    # Create two columns: Left for Audio, Right for Q&A/Score
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
         st.subheader("Play Recording")
-        # Extract the S3 link from your 'File_Location' column
-        audio_url = row['File_Location']
+        # Extract the S3 link safely
+        audio_link = row.get('File_Location')
         
-        if pd.notna(audio_url):
-            st.audio(audio_url)
-            st.write(f"**ID:** {row['Rec_ID']}")
+        if pd.notna(audio_link) and str(audio_link).startswith("http"):
+            st.audio(audio_link)
+            st.caption(f"Recording ID: {row.get('Rec_ID', 'Unknown')}")
         else:
-            st.warning("No audio link found for this record.")
-
-    with col_right:
-        st.subheader("Details & Transcript")
+            st.warning("⚠️ No valid audio link found for this record.")
+            
+        # Optional: Show transcript excerpt here if you want it under the player
         if 'Transcript_Excerpt' in row and pd.notna(row['Transcript_Excerpt']):
-            st.info(row['Transcript_Excerpt'])
-        
-        if 'Decision' in row:
-            st.write(f"**Decision:** {row['Decision']}")
-else:
-    st.info("💡 Select a row above to listen to the audio.")
+            st.info(f"**Transcript Excerpt:**\n\n{row['Transcript_Excerpt']}")
 
+    with col2:
+        st.subheader("Q&A & Quality")
+        
+        # Check for Q1 and display chat style
+        if 'Q1' in row and pd.notna(row['Q1']):
+            st.chat_message("user").write(row['Q1'])
+            # Only show A1 if Q1 exists
+            if 'A1' in row and pd.notna(row['A1']):
+                st.chat_message("assistant").write(row['A1'])
+        else:
+            st.write("_No Q&A pairs recorded._")
+        
+        st.divider()
+        
+        # Safe Quality Score display
+        score = row.get('Composite_Score', 'N/A')
+        st.write(f"**Quality Score:** {score}/5")
+        
+        # Safe Rejection Reason display
+        if 'Rejection_Reason' in row and pd.notna(row['Rejection_Reason']):
+            st.error(f"**Rejection Reason:** {row['Rejection_Reason']}")
+
+else:
+    # This shows when the app first loads or no row is clicked
+    st.info("💡 Click a row in the table above to listen to the recording and see details.")# --- AUDIO & Q&A SECTION ---
+if selection.selection.rows:
+    selected_index = selection.selection.rows[0]
+    row = df.iloc[selected_index]
+    
+    st.divider()
+    
+    # Create two columns: Left for Audio, Right for Q&A/Score
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        st.subheader("Play Recording")
+        # Extract the S3 link safely
+        audio_link = row.get('File_Location')
+        
+        if pd.notna(audio_link) and str(audio_link).startswith("http"):
+            st.audio(audio_link)
+            st.caption(f"Recording ID: {row.get('Rec_ID', 'Unknown')}")
+        else:
+            st.warning("⚠️ No valid audio link found for this record.")
+            
+        # Optional: Show transcript excerpt here if you want it under the player
+        if 'Transcript_Excerpt' in row and pd.notna(row['Transcript_Excerpt']):
+            st.info(f"**Transcript Excerpt:**\n\n{row['Transcript_Excerpt']}")
+
+    with col2:
+        st.subheader("Q&A & Quality")
+        
+        # Check for Q1 and display chat style
+        if 'Q1' in row and pd.notna(row['Q1']):
+            st.chat_message("user").write(row['Q1'])
+            # Only show A1 if Q1 exists
+            if 'A1' in row and pd.notna(row['A1']):
+                st.chat_message("assistant").write(row['A1'])
+        else:
+            st.write("_No Q&A pairs recorded._")
+        
+        st.divider()
+        
+        # Safe Quality Score display
+        score = row.get('Composite_Score', 'N/A')
+        st.write(f"**Quality Score:** {score}/5")
+        
+        # Safe Rejection Reason display
+        if 'Rejection_Reason' in row and pd.notna(row['Rejection_Reason']):
+            st.error(f"**Rejection Reason:** {row['Rejection_Reason']}")
+
+else:
+    # This shows when the app first loads or no row is clicked
+    st.info("💡 Click a row in the table above to listen to the recording and see details.")
