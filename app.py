@@ -70,7 +70,7 @@ if selection.selection.rows:
         
         # Safe Quality Score display
         score = row.get('Composite_Score', 'N/A')
-        st.write(f"**Quality Score:** {score}/5")
+        st.write(f"**Quality Score:** {score}/5.0")
         
         # Safe Rejection Reason display
         if 'Rejection_Reason' in row and pd.notna(row['Rejection_Reason']):
