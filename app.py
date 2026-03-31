@@ -77,5 +77,4 @@ with col_right:
         
         if 'Rejection_Reason' in row and pd.notna(row['Rejection_Reason']):
             st.error(f"**Rejection Reason:** {row['Rejection_Reason']}")
-else:
-    st.info("💡 Select a row above to listen to the audio.")
+
