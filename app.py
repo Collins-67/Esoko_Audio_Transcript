@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 
-st.set_page_config(page_title="Esoko Audio Explorer", layout="wide")
+st.set_page_config(page_title="Esoko Audio Transcript", layout="wide")
 
 # --- CONNECTION ---
 conn = st.connection("gsheets", type=GSheetsConnection)
@@ -11,7 +11,7 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 # Replace "Annotations" with your actual tab name if different
 df = conn.read(worksheet="Annotations", skiprows=1, ttl=60)
 
-st.title("🎧 Esoko Hotline Audio Explorer")
+st.title("🎧 Esoko Audio Transcript")
 
 # --- SIDEBAR FILTERS ---
 st.sidebar.header("Filter Records")
