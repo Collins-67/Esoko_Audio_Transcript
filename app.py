@@ -15,10 +15,11 @@ st.title("🎧 Esoko Audio Transcript")
 
 # --- SIDEBAR FILTERS ---
 st.sidebar.header("Filter Records")
-if 'Lang_Detected' in df.columns:
-    langs = st.sidebar.multiselect("Language", df['Lang_Detected'].unique())
-    if langs:
-        df = df[df['Lang_Detected'].isin(langs)]
+if 'Decision' in df.columns:
+    # Get unique values for the selectbox
+    decisions = st.sidebar.multiselect("Filter by Decision", df['Decision'].unique())
+    if decisions:
+        df = df[df['Decision'].isin(decisions)]
 
 # --- DATA TABLE ---
 # Show all columns, but allow single-row selection
@@ -54,19 +55,24 @@ if selection.selection.rows:
         if 'Transcript_Excerpt' in row and pd.notna(row['Transcript_Excerpt']):
             st.info(f"**Transcript Excerpt:**\n\n{row['Transcript_Excerpt']}")
 
-    with col2:
-        st.subheader("Q&A & Quality")
+with col2:
+        st.subheader("Q&A, Facts & Quality")
         
         # Check for Q1 and display chat style
         if 'Q1' in row and pd.notna(row['Q1']):
-            st.chat_message("user").write(row['Q1'])
+            # Display Question & Facts
+            st.chat_message("user").write(f"**Question:** {row['Q1']}")
+            if 'Question_Facts' in row and pd.notna(row['Question_Facts']):
+                st.caption(f"📌 **Extracted Question Facts:** {row['Question_Facts']}")
+            
             # Only show A1 if Q1 exists
             if 'A1' in row and pd.notna(row['A1']):
-                st.chat_message("assistant").write(row['A1'])
+                st.chat_message("assistant").write(f"**Answer:** {row['A1']}")
+                if 'Answer_Facts' in row and pd.notna(row['Answer_Facts']):
+                    st.caption(f"💡 **Extracted Answer Facts:** {row['Answer_Facts']}")
         else:
             st.write("_No Q&A pairs recorded._")
         
-        st.divider()
         
         # Safe Quality Score display
         score = row.get('Composite_Score', 'N/A')
